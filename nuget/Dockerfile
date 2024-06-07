@@ -4,6 +4,10 @@ USER root
 
 ENV DEPENDABOT_NATIVE_HELPERS_PATH="/opt"
 
+# Install git
+RUN apt-get -y update
+RUN apt-get -y install git
+
 # Install .NET SDK dependencies
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
