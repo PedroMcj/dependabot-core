@@ -103,6 +103,48 @@ module Dependabot
         create_pull_request
       end
 
+      sig { returns(String) }
+      def get_api_url
+        #return azure_client_for_source.get_create_pull_request_url(
+        #  pr_name,
+        #  branch_name,
+        #  source.branch || default_branch,
+        #  pr_description,
+        #  labeler.labels_for_pr,
+        #  reviewers,
+        #  assignees,
+        #  work_item
+        #)
+        pr_name_val = pr_name
+        branch_name_val = branch_name
+        source_branch_val = source.branch || default_branch
+        pr_description_val = pr_description
+        labels_val = labeler.labels_for_pr
+        reviewers_val = reviewers
+        assignees_val = assignees
+        work_item_val = work_item
+
+        puts "pr_name: #{pr_name_val}"
+        puts "branch_name: #{branch_name_val}"
+        puts "source_branch: #{source_branch_val}"
+        puts "pr_description: #{pr_description_val}"
+        puts "labels: #{labels_val}"
+        puts "reviewers: #{reviewers_val}"
+        puts "assignees: #{assignees_val}"
+        puts "work_item: #{work_item_val}"
+
+        return azure_client_for_source.get_create_pull_request_url(
+          pr_name_val,
+          branch_name_val,
+          source_branch_val,
+          pr_description_val,
+          labels_val,
+          reviewers_val,
+          assignees_val,
+          work_item_val
+        )
+      end
+
       private
 
       sig { returns(Dependabot::Clients::Azure) }
@@ -148,6 +190,17 @@ module Dependabot
 
       sig { returns(Excon::Response) }
       def create_pull_request
+        puts azure_client_for_source.get_create_pull_request_url(
+          pr_name,
+          branch_name,
+          source.branch || default_branch,
+          pr_description,
+          labeler.labels_for_pr,
+          reviewers,
+          assignees,
+          work_item
+        )
+
         azure_client_for_source.create_pull_request(
           pr_name,
           branch_name,

@@ -243,6 +243,67 @@ module Dependabot
           "/pullrequests?api-version=5.0", content.to_json)
       end
 
+      # rubocop:disable Metrics/ParameterLists
+      sig do
+        params(
+          pr_name: String,
+          source_branch: String,
+          target_branch: String,
+          pr_description: String,
+          labels: T::Array[String],
+          reviewers: T.nilable(T::Array[String]),
+          assignees: T.nilable(T::Array[String]),
+          work_item: T.nilable(Integer)
+        )
+          .returns(String)
+      end
+      def get_create_pull_request_url(pr_name, source_branch, target_branch,
+                              pr_description, labels,
+                              reviewers = nil, assignees = nil, work_item = nil)
+
+        #content = {
+          #sourceRefName: "refs/heads/" + source_branch,
+          #targetRefName: "refs/heads/" + target_branch,
+          #title: pr_name,
+          #description: pr_description,
+          #labels: labels.map { |label| { name: label } },
+          #reviewers: pr_reviewers(reviewers, assignees),
+          #workItemRefs: [{ id: work_item }]
+          #}
+
+          #return source.api_endpoint +
+          #source.organization + "/" + source.project +
+          #"/_apis/git/repositories/" + source.unscoped_repo +
+          #"/pullrequests?api-version=5.0"
+
+        puts "Inside get_create_pull_request_url"
+        puts "pr_name: #{pr_name}"
+        puts "source_branch: #{source_branch}"
+        puts "target_branch: #{target_branch}"
+        puts "pr_description: #{pr_description}"
+        puts "labels: #{labels.inspect}"
+        puts "reviewers: #{reviewers.inspect}"
+        puts "assignees: #{assignees.inspect}"
+        puts "work_item: #{work_item.inspect}"
+
+        content = {
+          sourceRefName: "refs/heads/" + source_branch,
+          targetRefName: "refs/heads/" + target_branch,
+          title: pr_name,
+          description: pr_description,
+          labels: labels.map { |label| { name: label } },
+          reviewers: pr_reviewers(reviewers, assignees),
+          workItemRefs: work_item.nil? ? [] : [{ id: work_item }]
+        }
+
+        puts "content: #{content.inspect}"
+
+        return source.api_endpoint +
+          source.organization + "/" + source.project +
+          "/_apis/git/repositories/" + source.unscoped_repo +
+          "/pullrequests?api-version=5.0"
+      end
+
       sig do
         params(
           pull_request_id: Integer,
@@ -276,6 +337,7 @@ module Dependabot
 
         response = patch(T.must(source.api_endpoint) +
                            source.organization + "/" + source.project +
+???END
                            "/_apis/git/repositories/" + source.unscoped_repo +
                            "/pullrequests/" + pull_request_id.to_s + "?api-version=5.1", content.to_json)
 
@@ -390,6 +452,10 @@ module Dependabot
         raise NotFound if response&.status == 404
 
         T.must(response)
+        puts "debug:"
+        response&.pretty_print
+        puts response
+
       end
 
       sig { params(url: String, json: String).returns(Excon::Response) }
